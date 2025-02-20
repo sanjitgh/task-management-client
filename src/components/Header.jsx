@@ -1,8 +1,8 @@
 import { useContext } from "react";
 import { AuthContext } from "../provaider/AuthProvaider";
 import axios from "axios";
-import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
+import Swal from "sweetalert2";
 const Header = () => {
   const { handelGoogleLogin, handelLogout, user } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -12,7 +12,15 @@ const Header = () => {
         name: res.user.displayName,
         email: res.user.email,
       };
-      toast.success("Login Successfull!");
+      // success message
+      Swal.fire({
+        position: "top-center",
+        icon: "success",
+        title: "Login Successfull!",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+
       navigate("/task");
       // send data in db
       await axios.post("http://localhost:5000/users", newUser);
