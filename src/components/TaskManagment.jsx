@@ -23,7 +23,7 @@ const TaskManagment = () => {
       date: addedDate,
     };
 
-    await axios.post("http://localhost:5000/task", taskData).then((res) => {
+    await axios.post("https://task-server-rouge-five.vercel.app/task", taskData).then((res) => {
       if (res.data.insertedId) {
         // successfull message
         Swal.fire({
@@ -50,7 +50,7 @@ const TaskManagment = () => {
     queryKey: ["tasks", user?.email],
     queryFn: async () => {
       const { data } = await axios.get(
-        `http://localhost:5000/tasks/${user?.email}`
+        `https://task-server-rouge-five.vercel.app/tasks/${user?.email}`
       );
       return data;
     },
@@ -68,7 +68,7 @@ const TaskManagment = () => {
       confirmButtonText: "Yes, delete it!",
     }).then(async (result) => {
       if (result.isConfirmed) {
-        await axios.delete(`http://localhost:5000/tasks/${id}`).then((res) => {
+        await axios.delete(`https://task-server-rouge-five.vercel.app/tasks/${id}`).then((res) => {
           if (res.data.deletedCount > 0) {
             Swal.fire({
               position: "top-center",
@@ -96,7 +96,7 @@ const TaskManagment = () => {
   const handelModal = async (id) => {
     try {
       refetch();
-      await axios.get(`http://localhost:5000/single-task/${id}`).then((res) => {
+      await axios.get(`https://task-server-rouge-five.vercel.app/single-task/${id}`).then((res) => {
         setTask(res.data);
         document.getElementById("updateModal").showModal();
       });
@@ -116,7 +116,7 @@ const TaskManagment = () => {
 
     try {
       // Send the updated data to the backend
-      await axios.patch(`http://localhost:5000/task/${task._id}`, updatedData);
+      await axios.patch(`https://task-server-rouge-five.vercel.app/task/${task._id}`, updatedData);
 
       // Success message
       Swal.fire({

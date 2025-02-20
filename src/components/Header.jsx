@@ -23,7 +23,7 @@ const Header = () => {
 
       navigate("/task");
       // send data in db
-      await axios.post("http://localhost:5000/users", newUser);
+      await axios.post("https://task-server-rouge-five.vercel.app/users", newUser);
     });
   };
 
