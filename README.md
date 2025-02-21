@@ -1,6 +1,6 @@
 # Task Management 
 
-**Task Mana** is a web application designed to help users manage and organize their tasks efficiently. It features task creation, task tracking, and real-time updates, providing a smooth and interactive user experience.
+**Task Manaagement** is a web application designed to help users manage and organize their tasks efficiently. It features task creation, task tracking, and real-time updates, providing a smooth and interactive user experience. The app also allows for drag-and-drop functionality to prioritize tasks.
 
 
 ## Short Description
