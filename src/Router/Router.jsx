@@ -3,10 +3,8 @@ import AuthProvaider from "../provaider/AuthProvaider";
 import MainLayout from "../Layout/MainLayout";
 import PrivetRoute from "../PrivetRoute/PrivetRoute";
 import TaskManagment from "../components/TaskManagment";
-import {
-  QueryClient,
-  QueryClientProvider,
-} from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Hero from "../components/Hero";
 const queryClient = new QueryClient();
 
 const Router = () => {
@@ -16,6 +14,7 @@ const Router = () => {
         <AuthProvaider>
           <Routes>
             <Route path="/" element={<MainLayout></MainLayout>}>
+              <Route path="/" element={<Hero></Hero>}></Route>
               <Route
                 path="/task"
                 element={

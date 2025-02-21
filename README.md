@@ -2,9 +2,6 @@
 
 **Task Mana** is a web application designed to help users manage and organize their tasks efficiently. It features task creation, task tracking, and real-time updates, providing a smooth and interactive user experience.
 
-## Live Link
-
-
 
 ## Short Description
 
@@ -32,3 +29,6 @@ Task Mana is a task management app that enables users to create, update, and tra
    ```bash
    git clone https://github.com/sanjitgh/task-management-client.git
    ```
+
+## Live Link
+https://taskmanagment-9267e.web.app
