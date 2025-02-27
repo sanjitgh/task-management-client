@@ -10,6 +10,7 @@ import { FaPlusCircle } from "react-icons/fa";
 const TaskManagment = () => {
   const { user } = useContext(AuthContext);
   const [task, setTask] = useState(null);
+  const [tasks, setTasks] = useState([]); // Local state for tasks
   const addedDate = new Date();
 
   // Send data to db
@@ -29,29 +30,32 @@ const TaskManagment = () => {
       order: tasksInCategory.length + 1, // Set the order
     };
 
-    await axios.post("https://task-server-rouge-five.vercel.app/task", taskData).then((res) => {
-      if (res.data.insertedId) {
-        Swal.fire({
-          position: "top-center",
-          icon: "success",
-          title: "Task added successfully!",
-          showConfirmButton: false,
-          timer: 800,
-        });
-        document.getElementById("my_modal_3").close();
-        getData.reset();
-        refetch();
-      }
-    });
+    await axios
+      .post("https://task-server-rouge-five.vercel.app/task", taskData)
+      .then((res) => {
+        if (res.data.insertedId) {
+          Swal.fire({
+            position: "top-center",
+            icon: "success",
+            title: "Task added successfully!",
+            showConfirmButton: false,
+            timer: 800,
+          });
+          document.getElementById("my_modal_3").close();
+          getData.reset();
+          refetch();
+        }
+      });
   };
 
   // Get all task data
-  const { data: tasks = [], refetch } = useQuery({
+  const { refetch } = useQuery({
     queryKey: ["tasks", user?.email],
     queryFn: async () => {
       const { data } = await axios.get(
         `https://task-server-rouge-five.vercel.app/tasks/${user?.email}`
       );
+      setTasks(data); // Update local state with fetched data
       return data;
     },
   });
@@ -93,10 +97,10 @@ const TaskManagment = () => {
       .sort((a, b) => a.order - b.order);
 
     // Remove the task from the source category
-    sourceTasks.splice(source.index, 1);
+    const [removedTask] = sourceTasks.splice(source.index, 1);
 
     // Add the task to the destination category at the correct position
-    destinationTasks.splice(destination.index, 0, taskToUpdate);
+    destinationTasks.splice(destination.index, 0, removedTask);
 
     // Update the order of tasks in the source category
     sourceTasks.forEach((task, index) => {
@@ -115,14 +119,25 @@ const TaskManagment = () => {
       order: destination.index + 1,
     };
 
+    // Update local state immediately
+    const updatedTasks = tasks.map((task) =>
+      task._id === taskId ? updatedTask : task
+    );
+    setTasks(updatedTasks); // Update local state for real-time UI update
+
     try {
       // Send the updated task to the backend
-      await axios.patch(`https://task-server-rouge-five.vercel.app/task/${taskId}`, updatedTask);
+      await axios.patch(
+        `https://task-server-rouge-five.vercel.app/task/${taskId}`,
+        updatedTask
+      );
 
-      // Refetch tasks to update the UI
+      // Refetch tasks to ensure the UI is in sync with the backend
       refetch();
     } catch (error) {
       console.error("Error updating task:", error);
+      // Revert local state if the backend update fails
+      setTasks(tasks);
     }
   };
 
@@ -138,19 +153,21 @@ const TaskManagment = () => {
       confirmButtonText: "Yes, delete it!",
     }).then(async (result) => {
       if (result.isConfirmed) {
-        await axios.delete(`https://task-server-rouge-five.vercel.app/tasks/${id}`).then((res) => {
-          if (res.data.deletedCount > 0) {
-            Swal.fire({
-              position: "top-center",
-              title: "Deleted!",
-              text: "Your task has been deleted.",
-              icon: "success",
-              showConfirmButton: false,
-              timer: 800,
-            });
-            refetch();
-          }
-        });
+        await axios
+          .delete(`https://task-server-rouge-five.vercel.app/tasks/${id}`)
+          .then((res) => {
+            if (res.data.deletedCount > 0) {
+              Swal.fire({
+                position: "top-center",
+                title: "Deleted!",
+                text: "Your task has been deleted.",
+                icon: "success",
+                showConfirmButton: false,
+                timer: 800,
+              });
+              refetch();
+            }
+          });
       }
     });
   };
@@ -159,10 +176,12 @@ const TaskManagment = () => {
   const handelModal = async (id) => {
     try {
       refetch();
-      await axios.get(`https://task-server-rouge-five.vercel.app/single-task/${id}`).then((res) => {
-        setTask(res.data);
-        document.getElementById("updateModal").showModal();
-      });
+      await axios
+        .get(`https://task-server-rouge-five.vercel.app/single-task/${id}`)
+        .then((res) => {
+          setTask(res.data);
+          document.getElementById("updateModal").showModal();
+        });
     } catch (err) {
       console.log(err);
     }
@@ -178,7 +197,10 @@ const TaskManagment = () => {
     };
 
     try {
-      await axios.patch(`https://task-server-rouge-five.vercel.app/task/${task._id}`, updatedData);
+      await axios.patch(
+        `https://task-server-rouge-five.vercel.app/task/${task._id}`,
+        updatedData
+      );
 
       Swal.fire({
         position: "top-center",
@@ -263,7 +285,10 @@ const TaskManagment = () => {
                                 <p className="text-sm text-gray-400 mt-2">
                                   Added on: {format(new Date(item.date), "Pp")}
                                 </p>
-                                <div className="card-actions flex justify-end mt-6 space-x-3">
+                                <span className="font-semibold w-fit p-1 rounded">
+                                  {item.category}
+                                </span>
+                                <div className="card-actions flex justify-end mt-2 space-x-3">
                                   <button
                                     onClick={() => handelModal(item._id)}
                                     className="btn btn-sm rounded bg-gray-800 text-white px-4 py-2 "
